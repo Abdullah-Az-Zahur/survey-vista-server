@@ -9,8 +9,9 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+// const uri = "mongodb+srv://surveyVistaUser:VdvTOrFpsVNEMX8j@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -23,8 +24,24 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const surveyCollection = client.db("survey1DB").collection("survey");
+
+    // get all survey
+    app.get("/survey", async (req, res) => {
+      const result = await surveyCollection.find().toArray();
+      res.send(result);
+    });
+
+    // get a single survey
+    app.get("/survey/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await surveyCollection.findOne(query);
+      res.send(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
