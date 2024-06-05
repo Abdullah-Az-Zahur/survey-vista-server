@@ -40,6 +40,22 @@ async function run() {
       res.send(result);
     });
 
+    // Logout
+    app.get("/logout", async (req, res) => {
+      try {
+        res
+          .clearCookie("token", {
+            maxAge: 0,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          })
+          .send({ success: true });
+        console.log("Logout successful");
+      } catch (err) {
+        res.status(500).send(err);
+      }
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
