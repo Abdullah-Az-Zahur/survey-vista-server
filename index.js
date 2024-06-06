@@ -6,7 +6,12 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -26,6 +31,8 @@ async function run() {
   try {
     const surveyCollection = client.db("survey1DB").collection("survey");
 
+    // survey related api
+
     // get all survey
     app.get("/survey", async (req, res) => {
       const result = await surveyCollection.find().toArray();
@@ -40,10 +47,20 @@ async function run() {
       res.send(result);
     });
 
+    // get latest data
+
     // save survey in db
     app.post("/create", async (req, res) => {
       const surveyData = req.body;
       const result = await surveyCollection.insertOne(surveyData);
+      res.send(result);
+    });
+
+    // get all survey for Surveyor
+    app.get("/my-listings/:email", async (req, res) => {
+      const email = req.params.email;
+      let query = { "surveyor.email": email };
+      const result = await surveyCollection.find(query).toArray();
       res.send(result);
     });
 
