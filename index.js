@@ -40,6 +40,13 @@ async function run() {
       res.send(result);
     });
 
+    // save survey in db
+    app.post("/create", async (req, res) => {
+      const surveyData = req.body;
+      const result = await surveyCollection.insertOne(surveyData);
+      res.send(result);
+    });
+
     // Logout
     app.get("/logout", async (req, res) => {
       try {
