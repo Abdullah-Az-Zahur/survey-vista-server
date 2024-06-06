@@ -30,9 +30,27 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const surveyCollection = client.db("survey1DB").collection("survey");
+    const usersCollection = client.db("survey1DB").collection("users");
+
+    // user related api
+    // save user data in DB
+    app.put("/user", async (req, res) => {
+      const user = req.body;
+      const query = { email: user?.email };
+
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          ...user,
+          timestamp: Date.now(),
+        },
+      };
+
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+    });
 
     // survey related api
-
     // get all survey
     app.get("/survey", async (req, res) => {
       const result = await surveyCollection.find().toArray();
@@ -61,6 +79,15 @@ async function run() {
       const email = req.params.email;
       let query = { "surveyor.email": email };
       const result = await surveyCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // delete survey
+    app.delete("/my-listings/:id", async (req, res) => {
+      const id = req.params.id;
+      // const query = { _id: new ObjectId(id) }
+      const query = { _id: new ObjectId(id) };
+      const result = await surveyCollection.deleteOne(query);
       res.send(result);
     });
 
