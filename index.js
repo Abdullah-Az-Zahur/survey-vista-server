@@ -33,21 +33,54 @@ async function run() {
     const usersCollection = client.db("survey1DB").collection("users");
 
     // user related api
-    // save user data in DB
+    // save a user data in DB
     app.put("/user", async (req, res) => {
       const user = req.body;
+
       const query = { email: user?.email };
+      // check if user already exists in db
+      const isExist = await usersCollection.findOne(query);
+      if (isExist) {
+        if (user.status === "Requested") {
+          // if existing user try to change his role
+          const result = await usersCollection.updateOne(query, {
+            $set: { status: user?.status },
+          });
+          return res.send(result);
+        } else {
+          // if existing user login again
+          return res.send(isExist);
+        }
+      }
 
+      // save user for the first time
       const options = { upsert: true };
-
       const updateDoc = {
         $set: {
           ...user,
           timestamp: Date.now(),
         },
       };
-
       const result = await usersCollection.updateOne(query, updateDoc, options);
+      // welcome new user
+      sendEmail(user?.email, {
+        subject: "Welcome to Survey vista!",
+        message: `Hope you will find you destination`,
+      });
+      res.send(result);
+    });
+
+    // get a user info by email from db
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
+      res.send(result);
+    });
+
+    // get all users data from db
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
     });
 
     // survey related api
