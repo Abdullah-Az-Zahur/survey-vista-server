@@ -65,6 +65,23 @@ async function run() {
       res.send(result);
     });
 
+    // update survey
+    app.patch("/survey/:id", async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          deadline: item.deadline,
+        },
+      };
+      const result = await surveyCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     // get latest data
 
     // save survey in db
