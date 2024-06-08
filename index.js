@@ -63,10 +63,10 @@ async function run() {
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
       // welcome new user
-      sendEmail(user?.email, {
-        subject: "Welcome to Survey vista!",
-        message: `Hope you will find you destination`,
-      });
+      // sendEmail(user?.email, {
+      //   subject: "Welcome to Survey vista!",
+      //   message: `Hope you will find you destination`,
+      // });
       res.send(result);
     });
 
@@ -82,6 +82,18 @@ async function run() {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
+
+    //update a user role
+    app.patch('/users/update/:email', async (req, res) => {
+      const email = req.params.email
+      const user = req.body
+      const query = { email }
+      const updateDoc = {
+        $set: { ...user, timestamp: Date.now() },
+      }
+      const result = await usersCollection.updateOne(query, updateDoc)
+      res.send(result)
+    })
 
     // survey related api
     // get all survey
