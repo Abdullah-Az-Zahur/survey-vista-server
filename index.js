@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const port = process.env.PORT || 5000;
 
@@ -13,10 +15,28 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+
+// Verify Token Middleware
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token;
+  console.log(token);
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      console.log(err);
+      return res.status(401).send({ message: "unauthorized access" });
+    }
+    req.user = decoded;
+    next();
+  });
+};
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-// const uri = "mongodb+srv://surveyVistaUser:VdvTOrFpsVNEMX8j@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -34,6 +54,47 @@ async function run() {
     const SurveyResultCollection = client
       .db("survey1DB")
       .collection("surveyResult");
+
+    // verify admin middleware
+    const verifyAdmin = async (req, res, next) => {
+      console.log("hello");
+      const user = req.user;
+      const query = { email: user?.email };
+      const result = await usersCollection.findOne(query);
+      console.log(result?.role);
+      if (!result || result?.role !== "admin")
+        return res.status(401).send({ message: "unauthorized access!!" });
+
+      next();
+    };
+    // verify host middleware
+    const verifySurveyor = async (req, res, next) => {
+      console.log("hello");
+      const user = req.user;
+      const query = { email: user?.email };
+      const result = await usersCollection.findOne(query);
+      console.log(result?.role);
+      if (!result || result?.role !== "surveyor") {
+        return res.status(401).send({ message: "unauthorized access!!" });
+      }
+
+      next();
+    };
+
+    // auth related api
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "365d",
+      });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        })
+        .send({ success: true });
+    });
 
     // user related api
     // save a user data in DB
@@ -81,7 +142,7 @@ async function run() {
     });
 
     // get all users data from db
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -129,6 +190,44 @@ async function run() {
       const result = await surveyCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
+    // Get all surveys data from db for pagination
+    app.get("/all-survey", async (req, res) => {
+      const size = parseInt(req.query.size);
+      const page = parseInt(req.query.page) - 1;
+      const filter = req.query.filter;
+      const sort = req.query.sort;
+      const search = req.query.search;
+      console.log(size, page);
+
+      let query = {
+        title: { $regex: search, $options: "i" },
+      };
+      if (filter) query.category = filter;
+      let options = {};
+      if (sort) options = { sort: { deadline: sort === "asc" ? 1 : -1 } };
+      const result = await surveyCollection
+        .find(query, options)
+        .skip(page * size)
+        .limit(size)
+        .toArray();
+
+      res.send(result);
+    });
+
+    // Get all survey data count from db
+    app.get("/survey-count", async (req, res) => {
+      const filter = req.query.filter;
+      const search = req.query.search;
+      let query = {
+        title: { $regex: search, $options: "i" },
+      };
+      if (filter) query.category = filter;
+      const count = await surveyCollection.countDocuments(query);
+
+      res.send({ count });
+    });
+
     // update survey Vote
     app.patch("/surveyVote/:id", async (req, res) => {
       const item = req.body;
@@ -141,33 +240,34 @@ async function run() {
         };
         const result = await surveyCollection.updateOne(filter, updateDoc);
         return res.send(result);
-      }
-      else if (item?.selectedValue == "No") {
+      } else if (item?.selectedValue == "No") {
         const updateDoc = {
           $inc: { no: 1 },
         };
         const result = await surveyCollection.updateOne(filter, updateDoc);
         return res.send(result);
       }
-
     });
 
-    // get latest data
-
     // save survey in db
-    app.post("/create", async (req, res) => {
+    app.post("/create", verifyToken, verifySurveyor, async (req, res) => {
       const surveyData = req.body;
       const result = await surveyCollection.insertOne(surveyData);
       res.send(result);
     });
 
     // get all survey for Surveyor
-    app.get("/my-listings/:email", async (req, res) => {
-      const email = req.params.email;
-      let query = { "surveyor.email": email };
-      const result = await surveyCollection.find(query).toArray();
-      res.send(result);
-    });
+    app.get(
+      "/my-listings/:email",
+      verifyToken,
+      verifySurveyor,
+      async (req, res) => {
+        const email = req.params.email;
+        let query = { "surveyor.email": email };
+        const result = await surveyCollection.find(query).toArray();
+        res.send(result);
+      }
+    );
 
     // delete survey
     app.delete("/my-listings/:id", async (req, res) => {
@@ -178,15 +278,15 @@ async function run() {
       res.send(result);
     });
 
-    // Survey submit
+    // Survey submit related api
     app.put("/survey-result", async (req, res) => {
       const surveyData = req.body;
-      const query = { 
-        $and:[
-          {userEmail: surveyData?.userEmail},
-          {surveyId: surveyData?.surveyId},
-        ]
-       };
+      const query = {
+        $and: [
+          { userEmail: surveyData?.userEmail },
+          { surveyId: surveyData?.surveyId },
+        ],
+      };
       const options = { upsert: true };
       const updateDoc = {
         $set: surveyData,
@@ -216,7 +316,6 @@ async function run() {
       const result = await SurveyResultCollection.find(query).toArray();
       res.send(result);
     });
-    
 
     // Logout
     app.get("/logout", async (req, res) => {
