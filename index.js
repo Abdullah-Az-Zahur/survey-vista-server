@@ -31,6 +31,9 @@ async function run() {
   try {
     const surveyCollection = client.db("survey1DB").collection("survey");
     const usersCollection = client.db("survey1DB").collection("users");
+    const SurveyResultCollection = client
+      .db("survey1DB")
+      .collection("surveyResult");
 
     // user related api
     // save a user data in DB
@@ -84,16 +87,16 @@ async function run() {
     });
 
     //update a user role
-    app.patch('/users/update/:email', async (req, res) => {
-      const email = req.params.email
-      const user = req.body
-      const query = { email }
+    app.patch("/users/update/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const query = { email };
       const updateDoc = {
         $set: { ...user, timestamp: Date.now() },
-      }
-      const result = await usersCollection.updateOne(query, updateDoc)
-      res.send(result)
-    })
+      };
+      const result = await usersCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
 
     // survey related api
     // get all survey
@@ -126,6 +129,28 @@ async function run() {
       const result = await surveyCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+    // update survey Vote
+    app.patch("/surveyVote/:id", async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+
+      if (item?.selectedValue == "Yes") {
+        const updateDoc = {
+          $inc: { yes: 1 },
+        };
+        const result = await surveyCollection.updateOne(filter, updateDoc);
+        return res.send(result);
+      }
+      else if (item?.selectedValue == "No") {
+        const updateDoc = {
+          $inc: { no: 1 },
+        };
+        const result = await surveyCollection.updateOne(filter, updateDoc);
+        return res.send(result);
+      }
+
+    });
 
     // get latest data
 
@@ -152,6 +177,46 @@ async function run() {
       const result = await surveyCollection.deleteOne(query);
       res.send(result);
     });
+
+    // Survey submit
+    app.put("/survey-result", async (req, res) => {
+      const surveyData = req.body;
+      const query = { 
+        $and:[
+          {userEmail: surveyData?.userEmail},
+          {surveyId: surveyData?.surveyId},
+        ]
+       };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: surveyData,
+      };
+      const result = await SurveyResultCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+
+      if (surveyData?.selectedValue == "yes") {
+        const filter = { _id: surveyData?.surveyId };
+        await surveyCollection.updateOne(filter, { $inc: { yes: 1 } });
+      }
+      if (surveyData?.selectedValue == "no") {
+        const filter = { _id: surveyData?.surveyId };
+        await surveyCollection.updateOne(filter, { $inc: { no: 1 } });
+      }
+
+      res.send(result);
+    });
+
+    // get survey result by email
+    app.get("/survey-result/:email", async (req, res) => {
+      const email = req.params.email;
+      let query = { userEmail: email };
+      const result = await SurveyResultCollection.find(query).toArray();
+      res.send(result);
+    });
+    
 
     // Logout
     app.get("/logout", async (req, res) => {
