@@ -374,6 +374,12 @@ async function run() {
       res.send({ paymentResult });
     });
 
+    // get all payments data from db
+    app.get("/payments", verifyToken, verifyAdmin, async (req, res) => {
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    });
+
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
