@@ -10,7 +10,11 @@ const port = process.env.PORT || 5000;
 
 // middleware
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://survey-vista.web.app",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -145,7 +149,7 @@ async function run() {
     });
 
     // get all users data from db
-    app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -283,7 +287,7 @@ async function run() {
     });
 
     // save survey in db
-    app.post("/create", verifyToken, verifySurveyor, async (req, res) => {
+    app.post("/create", async (req, res) => {
       const surveyData = req.body;
       const result = await surveyCollection.insertOne(surveyData);
       res.send(result);
@@ -292,8 +296,8 @@ async function run() {
     // get all survey for Surveyor
     app.get(
       "/my-listings/:email",
-      verifyToken,
-      verifySurveyor,
+      // verifyToken,
+      // verifySurveyor,
       async (req, res) => {
         const email = req.params.email;
         let query = { "surveyor.email": email };
@@ -312,6 +316,13 @@ async function run() {
     });
 
     // Survey submit related api
+
+    // get all users data from db
+    app.get("/all-survey-result", async (req, res) => {
+      const result = await SurveyResultCollection.find().toArray();
+      res.send(result);
+    });
+
     app.put("/survey-result", async (req, res) => {
       const surveyData = req.body;
       const query = {
@@ -375,7 +386,7 @@ async function run() {
     });
 
     // get all payments data from db
-    app.get("/payments", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/payments", async (req, res) => {
       const result = await paymentCollection.find().toArray();
       res.send(result);
     });
@@ -383,10 +394,10 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
