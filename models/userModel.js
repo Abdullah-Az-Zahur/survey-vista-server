@@ -1,1 +1,2 @@
-const { getDB } = require("../config/db");
+import { getDB } from "../config/db";
+
