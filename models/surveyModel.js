@@ -28,7 +28,7 @@ export async function updateSurvey(id, surveyData) {
   );
 }
 
-export async function deleteSureyById(id) {
+export async function deleteSurveyById(id) {
   return await collections.surveyCollection.deleteOne({
     _id: new ObjectId(id),
   });
