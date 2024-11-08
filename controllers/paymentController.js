@@ -1,5 +1,5 @@
 import stripe from "stripe";
-import { getAllPayments, savePayment } from "../models/paymentModel";
+import { getAllPayments, savePayment } from "../models/paymentModel.js";
 
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 

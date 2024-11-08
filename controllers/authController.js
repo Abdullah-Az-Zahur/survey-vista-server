@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { getAllUsers } from "../models/userModel";
+import { getAllUsers } from "../models/userModel.js";
 
 export const createToken = (req, res) => {
   const user = req.body;

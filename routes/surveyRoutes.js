@@ -1,12 +1,12 @@
 import express from "express";
-import { verifyToken } from "../middleware/authMiddleware";
+import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   deleteSurveyByIdController,
   getAllSurveysController,
   getSurveyByIdController,
   saveSurveyController,
   updateSurveyController,
-} from "../controllers/surveyController";
+} from "../controllers/surveyController.js";
 
 const router = express.Router();
 

@@ -4,7 +4,7 @@ import {
   getSurveyById,
   saveSurvey,
   updateSurvey,
-} from "../models/surveyModel";
+} from "../models/surveyModel.js";
 
 export const getAllSurveysController = async (req, res) => {
   const surveys = await getAllSurveys(req.query);

@@ -1,5 +1,5 @@
 import { Timestamp } from "mongodb";
-import { connectDB } from "../config/db";
+import { connectDB } from "../config/db.js";
 let collections = null;
 
 (async () => {

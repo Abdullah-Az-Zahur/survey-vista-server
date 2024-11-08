@@ -2,10 +2,10 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
-import surveyRoutes from "./routes/surveyRoutes";
-import paymentRoutes from "./routes/paymentRoutes";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import surveyRoutes from "./routes/surveyRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 

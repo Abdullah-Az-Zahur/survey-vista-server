@@ -1,4 +1,4 @@
-import { findUserByEmail, saveUser, updateUser } from "../models/userModel";
+import { findUserByEmail, saveUser, updateUser } from "../models/userModel.js";
 
 export const getUserByEmail = async (req, res) => {
   const email = req.params.email;

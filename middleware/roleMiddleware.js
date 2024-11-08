@@ -1,4 +1,4 @@
-import { findUserByEmail } from "../models/userModel";
+import { findUserByEmail } from "../models/userModel.js";
 
 export const verifyAdmin = async (req, res, next) => {
   const user = await findUserByEmail(req.user.email);

@@ -1,10 +1,10 @@
 import express from "express";
-import { verifyToken } from "../middleware/authMiddleware";
+import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   createPaymentIntent,
   getAllPaymentsController,
   savePaymentController,
-} from "../controllers/paymentController";
+} from "../controllers/paymentController.js";
 
 const router = express.Router();
 
