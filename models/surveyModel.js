@@ -7,19 +7,19 @@ let collections = null;
   collections = await connectDB();
 })();
 
-export async function getAllSurveys(query) {
+export const getAllSurveys = async (query) => {
   return await collections.surveyCollection.find(query).toArray();
-}
+};
 
-export async function getSurveyById(id) {
+export const getSurveyById = async (id) => {
   return await collections.surveyCollection.findOne({
     _id: new ObjectId(id),
   });
-}
+};
 
-export async function saveSurvey(surveyData) {
+export const saveSurvey = async (surveyData) => {
   return await collections.surveyCollection.insertOne(surveyData);
-}
+};
 
 export async function updateSurvey(id, surveyData) {
   return await collections.surveyCollection.updateOne(
@@ -28,8 +28,8 @@ export async function updateSurvey(id, surveyData) {
   );
 }
 
-export async function deleteSurveyById(id) {
+export const deleteSurveyById = async (id) => {
   return await collections.surveyCollection.deleteOne({
     _id: new ObjectId(id),
   });
-}
+};

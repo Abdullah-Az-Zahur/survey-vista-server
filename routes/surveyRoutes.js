@@ -18,3 +18,5 @@ router.post("/", verifyToken, saveSurveyController);
 router.patch("/:id", verifyToken, updateSurveyController);
 
 router.delete("/:id", verifyToken, deleteSurveyByIdController);
+
+export default router;

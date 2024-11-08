@@ -6,11 +6,11 @@ let collections = null;
   collections = await connectDB();
 })();
 
-export async function findUserByEmail(email) {
+export const findUserByEmail = async (email) => {
   return await collections.usersCollection.findOne({ email });
-}
+};
 
-export async function saveUser(userData) {
+export const saveUser = async (userData) => {
   const { email } = userData;
   const options = { upsert: true };
   return await collections.usersCollection.updateOne(
@@ -23,9 +23,9 @@ export async function saveUser(userData) {
     },
     options
   );
-}
+};
 
-export async function updateUser(email, userData) {
+export const updateUser = async (email, userData) => {
   return await collections.usersCollection.updateOne(
     { email },
     {
@@ -35,8 +35,8 @@ export async function updateUser(email, userData) {
       },
     }
   );
-}
+};
 
-export async function getAllUsers() {
+export const getAllUsers = async () => {
   return await collections.usersCollection.find().toArray();
-}
+};
