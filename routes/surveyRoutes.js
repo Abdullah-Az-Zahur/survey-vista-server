@@ -4,13 +4,17 @@ import {
   deleteSurveyByIdController,
   getAllSurveysController,
   getSurveyByIdController,
+  getSurveyCountController,
+  getSurveysController,
   saveSurveyController,
   updateSurveyController,
 } from "../controllers/surveyController.js";
 
 const router = express.Router();
 
-router.get("/", verifyToken, getAllSurveysController);
+router.get("/", getSurveysController);
+router.get("/all-survey", getAllSurveysController);
+router.get("/count", getSurveyCountController);
 router.get("/:id", verifyToken, getSurveyByIdController);
 
 router.post("/", verifyToken, saveSurveyController);

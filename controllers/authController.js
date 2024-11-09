@@ -12,7 +12,7 @@ export const createToken = (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     })
-    .sent({ success: true });
+    .send({ success: true });
 };
 
 export const logout = (req, res) => {

@@ -3,7 +3,7 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   getUserByEmail,
   saveUserController,
-  updateUserController,
+  // updateUserController,
 } from "../controllers/userController.js";
 import { getAllUsersController } from "../controllers/authController.js";
 
@@ -17,6 +17,6 @@ router.get("/", verifyToken, getAllUsersController);
 router.put("/", verifyToken, saveUserController);
 
 // Patch Router
-router.patch("/update/:email", verifyToken, updateUserController);
+// router.patch("/update/:email", verifyToken, updateUserController);
 
 export default router;

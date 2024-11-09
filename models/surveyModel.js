@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { connectDB } from "../config/db.js";
+import { query } from "express";
 
 let collections = null;
 
@@ -7,8 +8,20 @@ let collections = null;
   collections = await connectDB();
 })();
 
-export const getAllSurveys = async (query) => {
+export const getSurveys = async (query) => {
   return await collections.surveyCollection.find(query).toArray();
+};
+
+export const getAllSurveys = async (query, options, page, size) => {
+  return await collections.surveyCollection
+    .find(query, options)
+    .skip(page * size)
+    .limit(size)
+    .toArray();
+};
+
+export const getSurveyCount = async (query) => {
+  return await collections.surveyCollection.countDocuments(query);
 };
 
 export const getSurveyById = async (id) => {
