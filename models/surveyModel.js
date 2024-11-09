@@ -47,7 +47,9 @@ export const deleteSurveyById = async (id) => {
   });
 };
 
-
+export const getAllSurveyResults = async () => {
+  return collections.SurveyResultCollection.find().toArray();
+};
 
 export const upsertSurveyResult = async (surveyData) => {
   const query = {

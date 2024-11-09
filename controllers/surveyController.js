@@ -1,5 +1,6 @@
 import {
   deleteSurveyById,
+  getAllSurveyResults,
   getAllSurveys,
   getSurveyById,
   getSurveyCount,
@@ -75,6 +76,16 @@ export const updateSurveyController = async (req, red) => {
 export const deleteSurveyByIdController = async (req, res) => {
   const result = await deleteSurveyById(req.params.id);
   res.req(result);
+};
+
+export const getAllSurveyResultsController = async (req, res) => {
+  try {
+    const results = await getAllSurveyResults();
+    res.status(200).json({ message: "Survey results fetched successfully", data: results });
+  } catch (error) {
+    console.error("Error fetching survey results:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 export const saveSurveyResultController = async (req, res) => {
