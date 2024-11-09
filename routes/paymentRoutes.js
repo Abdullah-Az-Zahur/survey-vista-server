@@ -11,6 +11,6 @@ const router = express.Router();
 router.post("/create-payment-intent", verifyToken, createPaymentIntent);
 router.post("/", verifyToken, savePaymentController);
 
-router.get("/get", verifyToken, getAllPaymentsController);
+router.get("/", verifyToken, getAllPaymentsController);
 
 export default router;

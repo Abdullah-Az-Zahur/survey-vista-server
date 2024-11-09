@@ -4,8 +4,10 @@ import {
   getSurveyById,
   getSurveyCount,
   getSurveys,
+  incrementSurveyResponse,
   saveSurvey,
   updateSurvey,
+  upsertSurveyResult,
 } from "../models/surveyModel.js";
 
 export const getSurveysController = async (req, res) => {
@@ -20,7 +22,6 @@ export const getAllSurveysController = async (req, res) => {
     const filter = req.query.filter;
     const sort = req.query.sort;
     const search = req.query.search || "";
-    
 
     let query = {
       title: { $regex: search, $options: "i" },
@@ -74,4 +75,37 @@ export const updateSurveyController = async (req, red) => {
 export const deleteSurveyByIdController = async (req, res) => {
   const result = await deleteSurveyById(req.params.id);
   res.req(result);
+};
+
+export const saveSurveyResultController = async (req, res) => {
+  try {
+    const surveyData = req.body;
+
+    if (
+      !surveyData?.userEmail ||
+      !surveyData?.surveyId ||
+      !surveyData?.selectedValue
+    ) {
+      return res.status(400).json({ error: "Invalid data provided" });
+    }
+
+    const result = await upsertSurveyResult(surveyData);
+
+    if (
+      surveyData?.selectedValue === "yes" ||
+      surveyData?.selectedValue === "no"
+    ) {
+      await incrementSurveyResponse(
+        surveyData.surveyId,
+        surveyData.selectedValue
+      );
+    }
+
+    res
+      .status(200)
+      .json({ message: "Survey result saved successfully", result });
+  } catch (error) {
+    console.error("Error saving survey result:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };

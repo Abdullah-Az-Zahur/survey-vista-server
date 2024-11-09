@@ -46,3 +46,36 @@ export const deleteSurveyById = async (id) => {
     _id: new ObjectId(id),
   });
 };
+
+
+
+export const upsertSurveyResult = async (surveyData) => {
+  const query = {
+    $and: [
+      { userEmail: surveyData?.userEmail },
+      { surveyId: surveyData?.surveyId },
+    ],
+  };
+
+  const options = {
+    upsert: true,
+  };
+
+  const updateDoc = {
+    $set: surveyData,
+  };
+
+  return await collections.SurveyResultCollection.updateOne(
+    query,
+    updateDoc,
+    options
+  );
+};
+
+export const incrementSurveyResponse = async (surveyId, selectedValue) => {
+  const filter = { _id: surveyId };
+  const incrementField = selectedValue === "yes" ? { yes: 1 } : { no: 1 };
+  return await collections.surveyCollection.updateOne(filter, {
+    $inc: incrementField,
+  });
+};

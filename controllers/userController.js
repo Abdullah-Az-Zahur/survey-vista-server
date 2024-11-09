@@ -1,4 +1,10 @@
-import { createUser, findUserByEmail, updateUser,  } from "../models/userModel.js";
+import { Timestamp } from "mongodb";
+import {
+  createUser,
+  findUserByEmail,
+  updateUser,
+  updateUserRole,
+} from "../models/userModel.js";
 
 export const getUserByEmail = async (req, res) => {
   const email = req.params.email;
@@ -41,14 +47,30 @@ export const saveUserController = async (req, res) => {
 
     // Optional: Send a welcome email
     // sendWelcomeEmail(user.email);
-    
   } catch (error) {
     console.error("Error saving user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// export const updateUserController = async (req, res) => {
-//   const result = await updateUser(req.params.email, req.body);
-//   res.send(result);
-// };
+export const updateUserRoleController = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const roleData = req.body;
+
+    if (!user || !roleData?.role) {
+      return res.status(400).json({ error: "Email and role are required" });
+    }
+
+    const result = await updateUserRole(email, roleData);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ message: "User role updated successfully", result });
+  } catch (error) {
+    console.error("error updating user role:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

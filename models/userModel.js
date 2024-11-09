@@ -43,3 +43,14 @@ export const createUser = async (query, userData, options = {}) => {
   };
   return await collections.usersCollection.updateOne(query, updateDoc, options);
 };
+
+export const updateUserRole = async (email, roleData) => {
+  const query = { email };
+  const updateDoc = {
+    $set: {
+      ...roleData,
+      Timestamp: Date.now(),
+    },
+  };
+  return await collections.usersCollection.updateOne(query, updateDoc);
+};
