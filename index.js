@@ -13,6 +13,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://localhost:5000",
     "https://survey-vista.web.app",
   ],
   credentials: true,
@@ -57,10 +58,7 @@ async function run() {
     const surveyCollection = client.db("survey1DB").collection("survey");
     const usersCollection = client.db("survey1DB").collection("users");
     const paymentCollection = client.db("survey1DB").collection("payments");
-
-    const SurveyResultCollection = client
-      .db("survey1DB")
-      .collection("surveyResult");
+    const SurveyResultCollection = client.db("survey1DB").collection("surveyResult");
 
     // verify admin middleware
     const verifyAdmin = async (req, res, next) => {
