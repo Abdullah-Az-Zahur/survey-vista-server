@@ -1,14 +1,32 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-require("dotenv").config();
-const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import Stripe from "stripe";
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
 
+// Initialize dotenv
+dotenv.config();
+
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+const app = express();
 const port = process.env.PORT || 5000;
 
-// middleware
+// MongoDB connection URI
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// Create MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
+
+// Middleware
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -19,6 +37,7 @@ const corsOptions = {
   credentials: true,
   optionSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
@@ -28,37 +47,26 @@ const verifyToken = async (req, res, next) => {
   const token = req.cookies?.token;
   console.log(token);
   if (!token) {
-    return res.status(401).send({ message: "unauthorized access" });
+    return res.status(401).send({ message: "Unauthorized access" });
   }
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       console.log(err);
-      return res.status(401).send({ message: "unauthorized access" });
+      return res.status(401).send({ message: "Unauthorized access" });
     }
     req.user = decoded;
     next();
   });
 };
 
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nbrjeuw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
 async function run() {
   try {
     const surveyCollection = client.db("survey1DB").collection("survey");
     const usersCollection = client.db("survey1DB").collection("users");
     const paymentCollection = client.db("survey1DB").collection("payments");
-    const SurveyResultCollection = client.db("survey1DB").collection("surveyResult");
+    const SurveyResultCollection = client
+      .db("survey1DB")
+      .collection("surveyResult");
 
     // verify admin middleware
     const verifyAdmin = async (req, res, next) => {
