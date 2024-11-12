@@ -412,7 +412,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("survey vista start");
+  res.send("survey vista start from index.js");
 });
 
 app.listen(port, () => {
