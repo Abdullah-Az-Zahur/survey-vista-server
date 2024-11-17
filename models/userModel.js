@@ -26,3 +26,11 @@ export const saveOrUpdateUser = async (user) => {
   };
   return await usersCollection.updateOne(query, updateDoc, options);
 };
+
+export const updateUserRole = async (email, user) => {
+  const query = { email };
+  const updateDoc = {
+    $set: { ...user, Timestamp: Date.now() },
+  };
+  return await usersCollection.updateOne(query, updateDoc);
+};

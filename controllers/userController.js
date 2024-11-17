@@ -2,6 +2,7 @@ import {
   getAllUsers,
   getUserByEmail,
   saveOrUpdateUser,
+  updateUserRole,
   updateUserStatus,
 } from "../models/userModel.js";
 
@@ -41,5 +42,22 @@ export const saveUserController = async (req, res) => {
     res.send(result);
   } catch (error) {
     res.status(500).send({ error: error.message });
+  }
+};
+
+export const updateUserRoleController = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = req.body;
+    const result = await updateUserRole(email, user);
+    if (result.modifiedCount === 0) {
+      return res
+        .status(404)
+        .send({ message: "User not found or no changes made." });
+    }
+    res.send({ message: "User role updated successfully.", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error updating user role", error });
   }
 };
