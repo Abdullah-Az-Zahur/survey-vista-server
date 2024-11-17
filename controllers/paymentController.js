@@ -1,4 +1,4 @@
-import { createPaymentIntent, savePayment } from "../models/paymentModel.js";
+import { createPaymentIntent, getAllPayments, savePayment } from "../models/paymentModel.js";
 
 export const createPaymentIntentController = async (req, res) => {
   try {
@@ -23,3 +23,13 @@ export const createPaymentController = async (req, res) => {
     res.status(500).send({ message: "Error saving payment", error });
   }
 };
+
+export const getAllPaymentsController = async (req, res) => {
+    try {
+      const payments = await getAllPayments();
+      res.send(payments);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error fetching payments", error });
+    }
+  };

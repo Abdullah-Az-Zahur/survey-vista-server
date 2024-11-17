@@ -16,3 +16,8 @@ export const createPaymentIntent = async (price) => {
     const result = await paymentCollection.insertOne(payment);
     return result;
   };
+
+  export const getAllPayments = async () => {
+    const result = await paymentCollection.find().toArray();
+    return result;
+  };
