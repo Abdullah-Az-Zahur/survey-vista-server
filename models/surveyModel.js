@@ -35,3 +35,8 @@ export const getPaginatedSurveys = async (query, options, size, page) => {
 export const getSurveyCount = async (query) => {
   return await surveyCollection.countDocuments(query);
 };
+
+export const updateSurveyVote = async (id, updateDoc) => {
+  const filter = { _id: new ObjectId(id) };
+  return await surveyCollection.updateOne(filter, updateDoc);
+};

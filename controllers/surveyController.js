@@ -4,6 +4,7 @@ import {
   getSurveyById,
   getSurveyCount,
   updateSurveyById,
+  updateSurveyVote,
 } from "../models/surveyModel.js";
 
 export const getAllSurveysController = async (req, res) => {
@@ -94,5 +95,27 @@ export const getSurveyCountController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error fetching survey count", error });
+  }
+};
+
+export const updateSurveyVoteController = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const item = req.body;
+
+    if (item?.selectedValue === "Yes") {
+      const updateDoc = { $inc: { yes: 1 } };
+      const result = await updateSurveyVote(id, updateDoc);
+      return res.send(result);
+    } else if (item?.selectedValue === "No") {
+      const updateDoc = { $inc: { no: 1 } };
+      const result = await updateSurveyVote(id, updateDoc);
+      return res.send(result);
+    } else {
+      return res.status(400).send({ message: "Invalid vote value" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error updating survey vote", error });
   }
 };

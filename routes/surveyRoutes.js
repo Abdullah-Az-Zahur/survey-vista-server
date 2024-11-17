@@ -5,6 +5,7 @@ import {
   getSurveyByIdController,
   getSurveyCountController,
   updateSurveyByIdController,
+  updateSurveyVoteController,
 } from "../controllers/surveyController.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get("/survey-count", getSurveyCountController);
 
 // Patch request
 router.patch("/survey/:id", updateSurveyByIdController);
+router.patch("/surveyVote/:id", updateSurveyVoteController);
 
 export default router;
