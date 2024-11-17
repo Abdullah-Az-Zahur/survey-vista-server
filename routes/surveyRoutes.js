@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  createSurveyController,
   getAllSurveysController,
   getPaginatedSurveysController,
   getSurveyByIdController,
@@ -20,4 +21,7 @@ router.get("/survey-count", getSurveyCountController);
 router.patch("/survey/:id", updateSurveyByIdController);
 router.patch("/surveyVote/:id", updateSurveyVoteController);
 
+// Post request
+
 export default router;
+router.post("/create", createSurveyController);

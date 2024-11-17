@@ -1,4 +1,5 @@
 import {
+  createSurvey,
   getAllSurveys,
   getPaginatedSurveys,
   getSurveyById,
@@ -117,5 +118,16 @@ export const updateSurveyVoteController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error updating survey vote", error });
+  }
+};
+
+export const createSurveyController = async (req, res) => {
+  try {
+    const surveyData = req.body;
+    const result = await createSurvey(surveyData);
+    res.status(201).send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error saving survey data", error });
   }
 };

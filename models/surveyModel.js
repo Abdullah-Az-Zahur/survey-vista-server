@@ -40,3 +40,7 @@ export const updateSurveyVote = async (id, updateDoc) => {
   const filter = { _id: new ObjectId(id) };
   return await surveyCollection.updateOne(filter, updateDoc);
 };
+
+export const createSurvey = async (surveyData) => {
+  return await surveyCollection.insertOne(surveyData);
+};
