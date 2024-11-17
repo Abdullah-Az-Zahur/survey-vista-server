@@ -44,3 +44,14 @@ export const updateSurveyVote = async (id, updateDoc) => {
 export const createSurvey = async (surveyData) => {
   return await surveyCollection.insertOne(surveyData);
 };
+
+export const getSurveysBySurveyorEmail = async (email) => {
+  const query = { "surveyor.email": email };
+  return await surveyCollection.find(query).toArray();
+};
+
+export const deleteSurveyById = async (id) => {
+  const query = { _id: new ObjectId(id) };
+  return await surveyCollection.deleteOne(query);
+};
+

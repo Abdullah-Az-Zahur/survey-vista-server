@@ -1,9 +1,11 @@
 import {
   createSurvey,
+  deleteSurveyById,
   getAllSurveys,
   getPaginatedSurveys,
   getSurveyById,
   getSurveyCount,
+  getSurveysBySurveyorEmail,
   updateSurveyById,
   updateSurveyVote,
 } from "../models/surveyModel.js";
@@ -129,5 +131,32 @@ export const createSurveyController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error saving survey data", error });
+  }
+};
+
+export const getSurveysBySurveyorEmailController = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const result = await getSurveysBySurveyorEmail(email);
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Error fetching surveys for surveyor", error });
+  }
+};
+
+export const deleteSurveyByIdController = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await deleteSurveyById(id);
+    if (result.deletedCount === 0) {
+      return res.status(404).send({ message: "Survey not found" });
+    }
+    res.send({ message: "Survey deleted successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error deleting survey", error });
   }
 };
