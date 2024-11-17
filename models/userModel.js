@@ -1,4 +1,3 @@
-import { Timestamp } from "mongodb";
 import client from "../config/db.js";
 
 const usersCollection = client.db("survey1DB").collection("users");
