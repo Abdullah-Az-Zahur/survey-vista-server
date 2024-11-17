@@ -34,3 +34,14 @@ export const updateUserRole = async (email, user) => {
   };
   return await usersCollection.updateOne(query, updateDoc);
 };
+
+export const updateUserPaymentRole = async (email, user) => {
+  const query = { email };
+  const updateDoc = {
+    $set: {
+      pro: user.pro,
+      Timestamp: Date.now(),
+    },
+  };
+  return await usersCollection.updateOne(query, updateDoc);
+};

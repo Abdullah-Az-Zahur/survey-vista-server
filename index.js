@@ -171,6 +171,7 @@ async function run() {
       const result = await usersCollection.updateOne(query, updateDoc);
       res.send(result);
     });
+    
     //update a user role for payments
     app.patch("/users/:email", async (req, res) => {
       const email = req.params.email;

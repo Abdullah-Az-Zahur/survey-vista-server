@@ -3,6 +3,7 @@ import {
   getAllUsersController,
   getUserByEmailController,
   saveUserController,
+  updateUserPaymentRoleController,
   updateUserRoleController,
 } from "../controllers/userController.js";
 
@@ -17,5 +18,6 @@ router.put("/user", saveUserController);
 
 // Patch requests
 router.patch("/users/update/:email", updateUserRoleController);
+router.patch("/users/:email", updateUserPaymentRoleController);
 
 export default router;
