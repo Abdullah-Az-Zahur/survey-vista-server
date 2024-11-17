@@ -1,4 +1,4 @@
-import { createPaymentIntent } from "../models/paymentModel.js";
+import { createPaymentIntent, savePayment } from "../models/paymentModel.js";
 
 export const createPaymentIntentController = async (req, res) => {
   try {
@@ -10,5 +10,16 @@ export const createPaymentIntentController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error creating payment intent", error });
+  }
+};
+
+export const createPaymentController = async (req, res) => {
+  try {
+    const payment = req.body;
+    const paymentResult = await savePayment(payment);
+    res.send({ paymentResult });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error saving payment", error });
   }
 };

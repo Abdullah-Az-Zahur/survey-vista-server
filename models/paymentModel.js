@@ -11,3 +11,8 @@ export const createPaymentIntent = async (price) => {
   
     return paymentIntent.client_secret;
   };
+
+  export const savePayment = async (payment) => {
+    const result = await paymentCollection.insertOne(payment);
+    return result;
+  };
