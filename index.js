@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import surveyRoutes from "./routes/surveyRoutes.js";
 import surveyResultRoutes from "./routes/surveyResultRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +37,7 @@ app.use(authRoutes);
 app.use(userRoutes);
 app.use(surveyRoutes);
 app.use(surveyResultRoutes);
+app.use(paymentRoutes);
 
 // Server
 app.get("/", (req, res) => {
